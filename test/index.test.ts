@@ -66,11 +66,139 @@ describe('An experiments extension installer', () => {
         [
             {
                 foo: {
+                    type: 1,
+                },
+            },
+            "Expected value of type string at path '/foo/type', actual integer.",
+        ],
+        [
+            {
+                foo: {
+                    type: 'bar',
+                },
+            },
+            "Unexpected value at path '/foo/type', expecting 'ab' or 'multivariate', found 'bar'.",
+        ],
+        [
+            {
+                foo: {
+                    type: 'ab',
+                    groups: [],
+                },
+            },
+            "Expected at least 1 item at path '/foo/groups', actual 0.",
+        ],
+        [
+            {
+                foo: {
+                    type: 'ab',
+                    groups: {},
+                },
+            },
+            "Expected at least 1 entry at path '/foo/groups', actual 0.",
+        ],
+        [
+            {
+                foo: {
+                    type: 'ab',
+                    groups: {a: 1.2},
+                },
+            },
+            "Expected a value less than or equal to 1 at path '/foo/groups/a', actual 1.2.",
+        ],
+        [
+            {
+                foo: {
+                    type: 'ab',
+                    groups: [''],
+                },
+            },
+            "Expected at least 1 character at path '/foo/groups/0', actual 0.",
+        ],
+        [
+            {
+                foo: {
+                    type: 'ab',
+                    groups: [['a', 'b']],
+                },
+            },
+            "Expected value of type string at path '/foo/groups/0', actual array.",
+        ],
+        [
+            {
+                foo: {
+                    type: 'ab',
+                    groups: ['a', 'b'],
+                    traffic: 'bar',
+                },
+            },
+            "Expected value of type number at path '/foo/traffic', actual string.",
+        ],
+        [
+            {
+                foo: {
+                    type: 'ab',
+                    groups: ['a', 'b'],
+                    audience: 9,
+                },
+            },
+            "Expected value of type string at path '/foo/audience', actual integer.",
+        ],
+        [
+            {
+                foo: {
                     type: 'multivariate',
                     groups: ['a'],
                 },
             },
             "Expected value of type array at path '/foo/groups/0', actual string.",
+        ],
+        [
+            {
+                foo: {
+                    type: 'multivariate',
+                    groups: [],
+                },
+            },
+            "Expected at least 1 item at path '/foo/groups', actual 0.",
+        ],
+        [
+            {
+                foo: {
+                    type: 'multivariate',
+                    groups: [[]],
+                },
+            },
+            "Expected at least 1 item at path '/foo/groups/0', actual 0.",
+        ],
+        [
+            {
+                foo: {
+                    type: 'multivariate',
+                    groups: [['']],
+                },
+            },
+            "Expected at least 1 character at path '/foo/groups/0/0', actual 0.",
+        ],
+        [
+            {
+                foo: {
+                    type: 'multivariate',
+                    groups: [['a'], ['b']],
+                    traffic: 'bar',
+                },
+            },
+            "Expected value of type number at path '/foo/traffic', actual string.",
+        ],
+        [
+            {
+                foo: {
+                    type: 'multivariate',
+                    groups: [['a'], ['b']],
+                    audience: 9,
+                },
+            },
+            "Expected value of type string at path '/foo/audience', actual integer.",
         ],
     ])('should reject definitions %p', (definitions: any, error: string) => {
         const [, factory]: [string, ExtensionFactory] = (engine.extend as jest.Mock).mock.calls[0];
