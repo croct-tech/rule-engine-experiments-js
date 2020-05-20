@@ -101,10 +101,28 @@ describe('An experiments extension installer', () => {
             {
                 foo: {
                     type: 'ab',
-                    groups: {a: 1.2},
+                    groups: {a: {}},
                 },
             },
-            "Expected a value less than or equal to 1 at path '/foo/groups/a', actual 1.2.",
+            "Missing property '/foo/groups/a/weight'.",
+        ],
+        [
+            {
+                foo: {
+                    type: 'ab',
+                    groups: {a: {weight: 1.2}},
+                },
+            },
+            "Expected a value less than or equal to 1 at path '/foo/groups/a/weight', actual 1.2.",
+        ],
+        [
+            {
+                foo: {
+                    type: 'ab',
+                    groups: {a: {weight: '0.8'}},
+                },
+            },
+            "Expected value of type number at path '/foo/groups/a/weight', actual string.",
         ],
         [
             {
