@@ -1,9 +1,9 @@
 import {Rule} from '@croct/plug-rule-engine/rule';
-import 'jest-extended';
 import {Context} from '@croct/plug-rule-engine/context';
 import {Predicate} from '@croct/plug-rule-engine/predicate';
 import {createLoggerMock, createTrackerMock} from './mocks';
 import ExperimentsExtension from '../src/extension';
+import 'jest-extended';
 
 beforeEach(() => {
     jest.restoreAllMocks();
@@ -53,7 +53,7 @@ describe('An experiment extension', () => {
             },
             "expected at least 1 character at path '/groupId', actual 0",
         ],
-    ])('should not provide a predicate if experiment is %p', (experiment: any, message: string) => {
+    ])('should log an error if the experiment properties are like %p', (experiment: any, message: string) => {
         const logger = createLoggerMock();
 
         const extension = new ExperimentsExtension(
@@ -104,6 +104,7 @@ describe('An A/B experiment runner', () => {
             window.sessionStorage,
             createLoggerMock(),
         );
+
         const variables = extension.getVariables();
 
         expect(variables).toHaveProperty('fooTest');
@@ -190,7 +191,7 @@ describe('An A/B experiment runner', () => {
         await expect((predicate as Predicate).test(context)).resolves.toBe(true);
     });
 
-    test('should persist the assigned group in both application and session storage', async () => {
+    test('should persist the assigned group in both browser and tab storage', async () => {
         const {sessionStorage} = window;
         const {localStorage} = window;
         const tracker = createTrackerMock();
@@ -239,7 +240,7 @@ describe('An A/B experiment runner', () => {
 
         tracker.track = jest.fn().mockResolvedValue(undefined);
 
-        // a new test group is assigned and stored in both session and application storage
+        // a new test group is assigned and stored in both tab and browser storage
         let variables = extension.getVariables();
 
         await variables.fooTest();
@@ -264,7 +265,7 @@ describe('An A/B experiment runner', () => {
         expect(sessionStorage.getItem('fooTest')).toBeNull();
         expect(localStorage.getItem('fooTest')).toBeNull();
 
-        // a new test group is assigned and stored in both session and application storage
+        // a new test group is assigned and stored in both tab and browser storage
         variables = extension.getVariables();
 
         await variables.fooTest();
@@ -291,7 +292,7 @@ describe('An A/B experiment runner', () => {
         await expect(tracker.track).toHaveBeenNthCalledWith(2, 'testGroupAssigned', secondEvent);
     });
 
-    test('should use the application storage as a fallback to retrieve the previous assigned group', async () => {
+    test('should use the browser storage as a fallback to retrieve the previous assigned group', async () => {
         const {sessionStorage} = window;
         const {localStorage} = window;
         const tracker = createTrackerMock();
@@ -312,7 +313,7 @@ describe('An A/B experiment runner', () => {
 
         tracker.track = jest.fn().mockResolvedValue(undefined);
 
-        // a new test group is assigned and stored in both session and application storage
+        // a new test group is assigned and stored in both tab and browser storage
         let variables = extension.getVariables();
         let firstAssignedGroup = await variables.fooTest();
 
@@ -337,7 +338,7 @@ describe('An A/B experiment runner', () => {
         expect(sessionStorage.getItem('fooTest')).toBeNull();
         expect(localStorage.getItem('fooTest')).toBeNull();
 
-        // a new test group is assigned and stored in both session and application storage
+        // a new test group is assigned and stored in both tab and browser storage
         variables = extension.getVariables();
 
         await variables.fooTest();
@@ -500,7 +501,7 @@ describe('An A/B experiment runner', () => {
         sessionStorage.setItem('fooTest', '123');
         localStorage.setItem('fooTest', '123');
 
-        // a new test group is assigned and stored in both session and application storage
+        // a new test group is assigned and stored in both tab and browser storage
         variables = extension.getVariables();
         const [secondAssignedGroup] = await variables.fooTest();
 
@@ -545,7 +546,7 @@ describe('An A/B experiment runner', () => {
 
         tracker.track = jest.fn().mockResolvedValue(undefined);
 
-        // a new test group is assigned and stored in both session and application storage
+        // a new test group is assigned and stored in both tab and browser storage
         let variables = extension.getVariables();
         const [firstAssignedGroup] = await variables.fooTest();
 
@@ -556,7 +557,7 @@ describe('An A/B experiment runner', () => {
         sessionStorage.setItem('fooTest', '"a');
         localStorage.setItem('fooTest', '"a');
 
-        // a new test group is assigned and stored in both session and application storage
+        // a new test group is assigned and stored in both tab and browser storage
         variables = extension.getVariables();
         const [secondAssignedGroup] = await variables.fooTest();
 
@@ -792,7 +793,7 @@ describe('A multivariate experiment runner', () => {
         await expect((predicate as Predicate).test(context)).resolves.toBe(true);
     });
 
-    test('should persist the assigned group in both application and session storage', async () => {
+    test('should persist the assigned group in both browser and tab storage', async () => {
         const {sessionStorage} = window;
         const {localStorage} = window;
         const tracker = createTrackerMock();
@@ -845,7 +846,7 @@ describe('A multivariate experiment runner', () => {
             createLoggerMock(),
         );
 
-        // a new test group is assigned and stored in both session and application storage
+        // a new test group is assigned and stored in both tab and browser storage
         let variables = extension.getVariables();
         let firstAssignedGroup = await variables.fooTest();
 
@@ -873,7 +874,7 @@ describe('A multivariate experiment runner', () => {
         expect(sessionStorage.getItem('fooTest')).toBeNull();
         expect(localStorage.getItem('fooTest')).toBeNull();
 
-        // a new test group is assigned and stored in both session and application storage
+        // a new test group is assigned and stored in both tab and browser storage
         variables = extension.getVariables();
         const secondAssignedGroup = await variables.fooTest();
 
@@ -903,7 +904,7 @@ describe('A multivariate experiment runner', () => {
         await expect(tracker.track).toHaveBeenNthCalledWith(2, 'testGroupAssigned', secondEvent);
     });
 
-    test('should use the application storage as a fallback to retrieve the previous assigned group', async () => {
+    test('should use the browser storage as a fallback to retrieve the previous assigned group', async () => {
         const {sessionStorage} = window;
         const {localStorage} = window;
         const tracker = createTrackerMock();
@@ -924,8 +925,8 @@ describe('A multivariate experiment runner', () => {
             createLoggerMock(),
         );
 
-        // first time, test group is assigned and result is saved in session and application storage
-        // a new test group is assigned and stored in both session and application storage
+        // first time, test group is assigned and result is saved in tab and browser storage
+        // a new test group is assigned and stored in both tab and browser storage
         let variables = extension.getVariables();
         let firstAssignedGroup = await variables.fooTest();
 
@@ -944,7 +945,7 @@ describe('A multivariate experiment runner', () => {
             expect.arrayContaining(JSON.parse(localStorage.getItem('fooTest') as string)),
         );
 
-        // second time, test group is not assigned and result is retrieved from application storage
+        // second time, test group is not assigned and result is retrieved from browser storage
         variables = extension.getVariables();
         firstAssignedGroup = await variables.fooTest();
 
@@ -955,14 +956,14 @@ describe('A multivariate experiment runner', () => {
             expect.arrayContaining(JSON.parse(localStorage.getItem('fooTest') as string)),
         );
 
-        // Session and application storage are cleared
+        // tab and browser storage are cleared
         sessionStorage.clear();
         localStorage.clear();
 
         expect(sessionStorage.getItem('fooTest')).toBeNull();
         expect(localStorage.getItem('fooTest')).toBeNull();
 
-        // third time, test group is assigned and result is saved in session and application storage
+        // third time, test group is assigned and result is saved in tab and browser storage
         variables = extension.getVariables();
         const secondAssignedGroup = await variables.fooTest();
 
@@ -1014,7 +1015,7 @@ describe('A multivariate experiment runner', () => {
             createLoggerMock(),
         );
 
-        // a new test group is assigned and stored in both session and application storage
+        // a new test group is assigned and stored in both tab and browser storage
         let variables = extension.getVariables();
         const firstAssignedGroup = await variables.fooTest();
 
@@ -1028,7 +1029,7 @@ describe('A multivariate experiment runner', () => {
         sessionStorage.setItem('fooTest', '123');
         localStorage.setItem('fooTest', '123');
 
-        // a new test group is assigned and stored in both session and application storage
+        // a new test group is assigned and stored in both tab and browser storage
         variables = extension.getVariables();
         const secondAssignedGroup = await variables.fooTest();
 
@@ -1079,7 +1080,7 @@ describe('A multivariate experiment runner', () => {
             createLoggerMock(),
         );
 
-        // a new test group is assigned and stored in both session and application storage
+        // a new test group is assigned and stored in both tab and browser storage
         let variables = extension.getVariables();
         const firstAssignedGroup = await variables.fooTest();
 
@@ -1093,7 +1094,7 @@ describe('A multivariate experiment runner', () => {
         sessionStorage.setItem('fooTest', '"a');
         localStorage.setItem('fooTest', '"a');
 
-        // a new test group is assigned and stored in both session and application storage
+        // a new test group is assigned and stored in both tab and browser storage
         variables = extension.getVariables();
         const secondAssignedGroup = await variables.fooTest();
 
