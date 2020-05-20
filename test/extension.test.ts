@@ -80,6 +80,31 @@ describe('An experiment extension', () => {
         expect(extension.getPredicate(rule)).toBeNull();
         expect(logger.error).toHaveBeenCalledWith(`Invalid experiment properties specified for rule "foo": ${message}.`)
     });
+
+    test('should not provide a predicate if the experiments definition is undefined', () => {
+        const extension = new ExperimentsExtension(
+            {
+                fooTest: {
+                    type: 'ab',
+                    audience: 'foo',
+                    groups: ['a', 'b'],
+                },
+            },
+            createTrackerMock(),
+            window.localStorage,
+            window.sessionStorage,
+            createLoggerMock(),
+        );
+
+        const rule = {
+            name: 'foo',
+            properties: {
+                experiment: undefined,
+            },
+        };
+
+        expect(extension.getPredicate(rule)).toBeNull();
+    });
 });
 
 describe('An A/B experiment runner', () => {
