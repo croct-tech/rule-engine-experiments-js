@@ -34,7 +34,7 @@ export type ExperimentProperties = {
     groupId: string,
 }
 
-const experimentPropertiesSchema = new ObjectType({
+const propertiesSchema = new ObjectType({
     required: ['groupId', 'testId'],
     properties: {
         testId: new StringType({minLength: 1}),
@@ -145,7 +145,7 @@ export default class ExperimentsExtension implements Extension {
         }
 
         try {
-            experimentPropertiesSchema.validate(experiment);
+            propertiesSchema.validate(experiment);
         } catch (error) {
             this.logger.error(`Invalid experiment properties specified for rule "${name}": ${formatCause(error)}`);
 
