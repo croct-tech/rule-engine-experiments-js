@@ -21,7 +21,7 @@ jest.mock('../src/extension', () => {
 });
 
 describe('An experiments extension installer', () => {
-    test('should register the plugin', () => {
+    test('should register the extension', () => {
         expect(engine.extend).toBeCalledWith('experiments', expect.anything());
 
         const [, factory]: [string, ExtensionFactory] = (engine.extend as jest.Mock).mock.calls[0];
