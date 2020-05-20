@@ -35,7 +35,7 @@ export type ExperimentProperties = {
 }
 
 const propertiesSchema = new ObjectType({
-    required: ['groupId', 'testId'],
+    required: ['testId', 'groupId'],
     properties: {
         testId: new StringType({minLength: 1}),
         groupId: new StringType({minLength: 1}),
@@ -140,7 +140,7 @@ export default class ExperimentsExtension implements Extension {
     }
 
     public getPredicate({name, properties: {experiment}}: Rule): Predicate|null {
-        if (typeof experiment !== 'object') {
+        if (experiment === undefined) {
             return null;
         }
 

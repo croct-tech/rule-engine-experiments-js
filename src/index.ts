@@ -10,7 +10,7 @@ declare module '@croct/plug-rule-engine/plugin' {
 
 declare module '@croct/plug-rule-engine/rule' {
     export interface RuleProperties {
-        experiments?: ExperimentProperties;
+        experiment?: ExperimentProperties;
     }
 }
 

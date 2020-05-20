@@ -43,15 +43,24 @@ croct.plug({
     plugins: {
         rules: {
             extensions: {
-                experiments: {
-                    'home-hero': {
-                        type: 'ab',
-                        traffic: 0.9,
-                        audience: 'user is returning',
-                        groups: ['a', 'b'],
-                    },
+                audiences: {
+                    'returning-users': 'user is returning',
                 },
             },
+            pages: {
+                '/home': [
+                    {
+                        rules: [
+                            {
+                                name: 'welcome-returning-users',
+                                properties: {
+                                    audience: 'returning-users',
+                                }
+                            }
+                        ]
+                    }
+                ]
+            }
         },
     },
 });
