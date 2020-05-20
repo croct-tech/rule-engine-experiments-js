@@ -1,9 +1,9 @@
 import engine from '@croct/plug-rule-engine/plugin';
-import '../src/index';
 import {ExtensionFactory} from '@croct/plug-rule-engine/extension';
 import {PluginSdk} from '@croct/plug/plugin';
 import {createLoggerMock, createTrackerMock} from './mocks';
 import ExperimentsExtension, {Definitions} from '../src/extension';
+import '../src/index';
 
 jest.mock('@croct/plug-rule-engine/plugin', () => ({
     default: {
