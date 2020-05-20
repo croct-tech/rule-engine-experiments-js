@@ -1,7 +1,7 @@
 import {Logger} from '@croct/plug/sdk';
 import {Tracker} from '@croct/plug/sdk/tracking';
 import {ExternalEventPayload} from '@croct/plug/sdk/event';
-import {ArrayType, NumberType, ObjectType, StringType, UnionType} from '@croct/plug/sdk/validation';
+import {ArrayType, NumberType, ObjectType, StringType, UnionType, formatCause} from '@croct/plug/sdk/validation';
 import {And, Contains, Predicate, Variable} from '@croct/plug-rule-engine/predicate';
 import {VariableMap} from '@croct/plug-rule-engine/context';
 import {Extension} from '@croct/plug-rule-engine/extension';
@@ -29,7 +29,20 @@ export type MultivariateExperiment = {
 
 export type Experiment = AbExperiment | MultivariateExperiment;
 
-export type Definitions = {[key: string]: Experiment};
+export type ExperimentProperties = {
+    testId: string,
+    groupId: string,
+}
+
+const experimentPropertiesSchema = new ObjectType({
+    required: ['groupId', 'testId'],
+    properties: {
+        testId: new StringType({minLength: 1}),
+        groupId: new StringType({minLength: 1}),
+    },
+});
+
+export type ExperimentDefinitions = {[key: string]: Experiment};
 
 const abTestSchema = new ObjectType({
     required: ['groups'],
@@ -92,7 +105,7 @@ export const definitionsSchema = new ObjectType({
 });
 
 export default class ExperimentsExtension implements Extension {
-    private readonly experiments: Definitions;
+    private readonly experiments: ExperimentDefinitions;
 
     private readonly tracker: Tracker;
 
@@ -103,7 +116,7 @@ export default class ExperimentsExtension implements Extension {
     private readonly logger: Logger;
 
     public constructor(
-        experiments: Definitions,
+        experiments: ExperimentDefinitions,
         tracker: Tracker,
         browserStorage: Storage,
         tagStorage: Storage,
@@ -131,21 +144,15 @@ export default class ExperimentsExtension implements Extension {
             return null;
         }
 
-        const {testId, groupId} = experiment;
+        try {
+            experimentPropertiesSchema.validate(experiment);
+        } catch (error) {
+            this.logger.error(`Invalid experiment properties specified for rule "${name}": ${formatCause(error)}`);
 
-        if (typeof testId !== 'string') {
-            throw new Error(
-                `Invalid test ID specified for rule "${name}", `
-                + `expected string but got ${typeof testId}.`,
-            );
+            return null;
         }
 
-        if (typeof groupId !== 'string') {
-            throw new Error(
-                `Invalid group ID specified for rule "${name}", `
-                + `expected string but got ${typeof groupId}.`,
-            );
-        }
+        const {testId, groupId} = experiment as ExperimentProperties;
 
         return this.getGroupCondition(testId, groupId);
     }
