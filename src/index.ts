@@ -1,6 +1,7 @@
 import engine from '@croct/plug-rule-engine/plugin';
 import {PluginArguments} from '@croct/plug/plugin';
-import ExperimentsExtension, {ExperimentDefinitions, ExperimentProperties, definitionsSchema} from './extension';
+import ExperimentsExtension, {ExperimentDefinitions, ExperimentProperties} from './extension';
+import {definitionsSchema} from './schemas';
 
 declare module '@croct/plug-rule-engine/plugin' {
     export interface ExtensionConfigurations {

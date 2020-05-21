@@ -36,12 +36,7 @@ describe('An experiments extension installer', () => {
             getTabStorage: () => window.sessionStorage,
         };
 
-        const definitions: ExperimentDefinitions = {
-            foo: {
-                type: 'ab',
-                groups: ['a', 'b'],
-            },
-        };
+        const definitions: ExperimentDefinitions = {};
 
         factory({options: definitions, sdk: sdk as PluginSdk});
 
@@ -228,7 +223,7 @@ describe('An experiments extension installer', () => {
             },
             "Expected value of type string at path '/foo/audience', actual integer.",
         ],
-    ])('should reject definitions %p', (definitions: any, error: string) => {
+    ])('should not allow %p', (definitions: any, error: string) => {
         const [, factory]: [string, ExtensionFactory] = (engine.extend as jest.Mock).mock.calls[0];
 
         const sdk: Partial<PluginSdk> = {
@@ -245,7 +240,7 @@ describe('An experiments extension installer', () => {
         expect(create).toThrow(error);
     });
 
-    test('should accept valid definitions', () => {
+    test('should allow valid definitions', () => {
         const [, factory]: [string, ExtensionFactory] = (engine.extend as jest.Mock).mock.calls[0];
 
         const sdk: Partial<PluginSdk> = {
