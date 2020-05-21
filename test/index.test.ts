@@ -245,33 +245,7 @@ describe('An experiments extension installer', () => {
         expect(create).toThrow(error);
     });
 
-    test.each<[any, string]>([
-        [
-            {
-                abFoo: {
-                    type: 'ab',
-                    groups: {a: {weight: 0.2}, b: {weight: 0.8}},
-                },
-                abBar: {
-                    type: 'ab',
-                    groups: ['a', 'b'],
-                    traffic: 0.8,
-                    audience: 'bar',
-                },
-                multivariateFoo: {
-                    type: 'multivariate',
-                    groups: [['a1', 'a2'], ['b1', 'b2']],
-                },
-                multivariateBar: {
-                    type: 'multivariate',
-                    groups: [['a1', 'a2'], ['b1', 'b2']],
-                    traffic: 0.8,
-                    audience: 'bar',
-                },
-            },
-            "Expected value of type object at path '/foo', actual integer.",
-        ],
-    ])('should accept definitions %p', (definitions: any) => {
+    test('should accept valid definitions', () => {
         const [, factory]: [string, ExtensionFactory] = (engine.extend as jest.Mock).mock.calls[0];
 
         const sdk: Partial<PluginSdk> = {
@@ -279,6 +253,29 @@ describe('An experiments extension installer', () => {
             getLogger: () => createLoggerMock(),
             getBrowserStorage: () => window.localStorage,
             getTabStorage: () => window.sessionStorage,
+        };
+
+        const definitions: ExperimentDefinitions = {
+            abFoo: {
+                type: 'ab',
+                groups: {a: {weight: 0.2}, b: {weight: 0.8}},
+            },
+            abBar: {
+                type: 'ab',
+                groups: ['a', 'b'],
+                traffic: 0.8,
+                audience: 'bar',
+            },
+            multivariateFoo: {
+                type: 'multivariate',
+                groups: [['a1', 'a2'], ['b1', 'b2']],
+            },
+            multivariateBar: {
+                type: 'multivariate',
+                groups: [['a1', 'a2'], ['b1', 'b2']],
+                traffic: 0.8,
+                audience: 'bar',
+            },
         };
 
         function create(): void {
