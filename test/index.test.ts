@@ -157,6 +157,16 @@ describe('An experiments extension installer', () => {
                 foo: {
                     type: 'ab',
                     groups: ['a', 'b'],
+                    traffic: 1.2,
+                },
+            },
+            "Expected a value less than or equal to 1 at path '/foo/traffic', actual 1.2.",
+        ],
+        [
+            {
+                foo: {
+                    type: 'ab',
+                    groups: ['a', 'b'],
                     audience: 9,
                 },
             },
@@ -233,5 +243,48 @@ describe('An experiments extension installer', () => {
         }
 
         expect(create).toThrow(error);
+    });
+
+    test.each<[any, string]>([
+        [
+            {
+                abFoo: {
+                    type: 'ab',
+                    groups: {a: {weight: 0.2}, b: {weight: 0.8}},
+                },
+                abBar: {
+                    type: 'ab',
+                    groups: ['a', 'b'],
+                    traffic: 0.8,
+                    audience: 'bar',
+                },
+                multivariateFoo: {
+                    type: 'multivariate',
+                    groups: [['a1', 'a2'], ['b1', 'b2']],
+                },
+                multivariateBar: {
+                    type: 'multivariate',
+                    groups: [['a1', 'a2'], ['b1', 'b2']],
+                    traffic: 0.8,
+                    audience: 'bar',
+                },
+            },
+            "Expected value of type object at path '/foo', actual integer.",
+        ],
+    ])('should accept definitions %p', (definitions: any) => {
+        const [, factory]: [string, ExtensionFactory] = (engine.extend as jest.Mock).mock.calls[0];
+
+        const sdk: Partial<PluginSdk> = {
+            tracker: createTrackerMock(),
+            getLogger: () => createLoggerMock(),
+            getBrowserStorage: () => window.localStorage,
+            getTabStorage: () => window.sessionStorage,
+        };
+
+        function create(): void {
+            factory({options: definitions, sdk: sdk as PluginSdk});
+        }
+
+        expect(create).not.toThrowError();
     });
 });
