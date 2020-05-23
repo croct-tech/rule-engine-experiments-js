@@ -5,7 +5,7 @@ import {definitionsSchema} from './schemas';
 
 declare module '@croct/plug-rule-engine/plugin' {
     export interface ExtensionConfigurations {
-        experiments?: ExperimentDefinitions;
+        experiments?: ExperimentDefinitions | false;
     }
 }
 
