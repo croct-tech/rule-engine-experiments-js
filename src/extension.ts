@@ -202,8 +202,8 @@ export default class ExperimentsExtension implements Extension {
         let sum = 0;
         const choices: {group: string, weight: number}[] = [];
         for (const [name, {weight}] of Object.entries(groups)) {
-            sum += weight;
-            choices.push({group: name, weight: weight});
+            sum += weight * 100;
+            choices.push({group: name, weight: weight * 100});
         }
 
         let random = Math.floor(Math.random() * sum);

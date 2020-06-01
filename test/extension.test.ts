@@ -440,59 +440,73 @@ describe('An A/B experiment runner', () => {
         expect(secondGroup).toEqual(50);
     });
 
-    test('should assign groups based on the weight specified', async () => {
-        const {sessionStorage} = window;
-        const {localStorage} = window;
-        const tracker = createTrackerMock();
+    test.each<[[number, number], [number, number]]>([
+        [[0.4, 0.1], [80, 20]],
+        [[0.8, 0.2], [80, 20]],
+        [[4, 1], [80, 20]],
+        [[8, 2], [80, 20]],
+        [[40, 10], [80, 20]],
+        [[80, 20], [80, 20]],
+        [[160, 40], [80, 20]],
+        [[0.1, 0.3], [25, 75]],
+        [[1, 3], [25, 75]],
+        [[10, 30], [25, 75]],
+    ])(
+        'should assign groups based on the weight specified',
+        async (weights: [number, number], distribution: [number, number]) => {
+            const {sessionStorage} = window;
+            const {localStorage} = window;
+            const tracker = createTrackerMock();
 
-        const extension = new ExperimentsExtension(
-            {
-                fooTest: {
-                    type: 'ab',
-                    audience: 'foo',
-                    groups: {
-                        a: {weight: 80},
-                        b: {weight: 20},
+            const extension = new ExperimentsExtension(
+                {
+                    fooTest: {
+                        type: 'ab',
+                        audience: 'foo',
+                        groups: {
+                            a: {weight: weights[0]},
+                            b: {weight: weights[1]},
+                        },
                     },
                 },
-            },
-            tracker,
-            localStorage,
-            sessionStorage,
-            createLoggerMock(),
-        );
+                tracker,
+                localStorage,
+                sessionStorage,
+                createLoggerMock(),
+            );
 
-        tracker.track = jest.fn().mockResolvedValue(undefined);
+            tracker.track = jest.fn().mockResolvedValue(undefined);
 
-        let random = 0;
-        jest.spyOn(window.Math, 'random').mockImplementation(() => random++ / 100);
+            let random = 0;
+            jest.spyOn(window.Math, 'random').mockImplementation(() => random++ / 100);
 
-        let firstGroup = 0;
-        let secondGroup = 0;
-        for (let i = 0; i < 100; i++) {
-            sessionStorage.clear();
-            localStorage.clear();
+            let firstGroup = 0;
+            let secondGroup = 0;
+            for (let i = 0; i < 100; i++) {
+                sessionStorage.clear();
+                localStorage.clear();
 
-            const variables = extension.getVariables();
-            const [assignedGroup] = await variables.fooTest();
+                const variables = extension.getVariables();
+                const [assignedGroup] = await variables.fooTest();
 
-            switch (assignedGroup) {
-                case 'a':
-                    firstGroup += 1;
-                    break;
+                switch (assignedGroup) {
+                    case 'a':
+                        firstGroup += 1;
+                        break;
 
-                case 'b':
-                    secondGroup += 1;
-                    break;
+                    case 'b':
+                        secondGroup += 1;
+                        break;
 
-                default:
-                    throw new Error(`Unexpected group: ${assignedGroup}.`);
+                    default:
+                        throw new Error(`Unexpected group: ${assignedGroup}.`);
+                }
             }
-        }
 
-        expect(firstGroup).toBe(80);
-        expect(secondGroup).toBe(20);
-    });
+            expect(firstGroup).toBe(distribution[0]);
+            expect(secondGroup).toBe(distribution[1]);
+        },
+    );
 
     test('should re-assign a test group if the stored value is not a string', async () => {
         const {sessionStorage} = window;

@@ -107,10 +107,10 @@ describe('An experiments extension installer', () => {
             {
                 foo: {
                     type: 'ab',
-                    groups: {a: {weight: 1.2}},
+                    groups: {a: {weight: -1.2}},
                 },
             },
-            "Expected a value less than or equal to 1 at path '/foo/groups/a/weight', actual 1.2.",
+            "Expected a value greater than or equal to 0 at path '/foo/groups/a/weight', actual -1.2.",
         ],
         [
             {
