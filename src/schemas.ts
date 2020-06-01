@@ -25,7 +25,6 @@ const abTestSchema = new ObjectType({
                     properties: {
                         weight: new NumberType({
                             minimum: 0,
-                            maximum: 1,
                         }),
                     },
                 }),
