@@ -33,7 +33,7 @@ export type Experiment = AbExperiment | MultivariateExperiment;
 export type ExperimentProperties = {
     testId: string,
     groupId: string,
-}
+};
 
 export type ExperimentDefinitions = {[key: string]: Experiment};
 

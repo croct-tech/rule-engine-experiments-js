@@ -78,7 +78,8 @@ describe('An experiment extension', () => {
         };
 
         expect(extension.getPredicate(rule)).toBeNull();
-        expect(logger.error).toHaveBeenCalledWith(`Invalid experiment properties specified for rule "foo": ${message}.`)
+        expect(logger.error)
+            .toHaveBeenCalledWith(`Invalid experiment properties specified for rule "foo": ${message}.`);
     });
 
     test('should not provide a predicate if the experiments definition is undefined', () => {
