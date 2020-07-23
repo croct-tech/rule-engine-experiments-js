@@ -1,6 +1,5 @@
 import {Logger} from '@croct/plug/sdk';
-import {Tracker} from '@croct/plug/sdk/tracking';
-import {ExternalEventPayload} from '@croct/plug/sdk/event';
+import {ExternalTrackingEventPayload, Tracker} from '@croct/plug/sdk/tracking';
 import {formatCause} from '@croct/plug/sdk/validation';
 import {And, Contains, Predicate, Variable} from '@croct/plug-rule-engine/predicate';
 import {VariableMap} from '@croct/plug-rule-engine/context';
@@ -176,7 +175,7 @@ export default class ExperimentsExtension implements Extension {
     }
 
     private trackAssignedAbGroup(testId: string, groupId: string): void {
-        const event: ExternalEventPayload<'testGroupAssigned'> = {
+        const event: ExternalTrackingEventPayload<'testGroupAssigned'> = {
             testId: testId,
             groupId: groupId,
         };
@@ -269,7 +268,7 @@ export default class ExperimentsExtension implements Extension {
     }
 
     private trackAssignedMultivariateGroup(testId: string, groupIds: string[]): void {
-        const event: ExternalEventPayload<'testGroupAssigned'> = {
+        const event: ExternalTrackingEventPayload<'testGroupAssigned'> = {
             testId: testId,
             groupId: groupIds.join('|'),
         };
